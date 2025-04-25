@@ -25,7 +25,8 @@ public static class MainMenu
             ConsoleUtils.NewTitle("Add Book");
             string author = ConsoleUtils.Prompt("Author");
             string title = ConsoleUtils.Prompt("Title");
-            Library.AddBook(author, title);
+            string cathegory = ConsoleUtils.Prompt("Cathegory");
+            Library.AddBook(author, title, cathegory);
         }
         catch(Exception ex)
         {
@@ -47,14 +48,5 @@ public static class MainMenu
     {
         throw new NotImplementedException();
     }
-
-
-
-    
-    //Lägg till en book
-
-    //ta bort en bok
-    //Lista alla böcker
-    //Sök efter en bok
 
 }
