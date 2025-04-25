@@ -7,6 +7,7 @@ public class Book
     private string author;
     private string title;
     private string isbn13;
+    private string cathegory;
     public string Author
     { get => author;
         set
@@ -37,6 +38,17 @@ public class Book
                 ValidationUtils.StringLength(value,13,13))
             {
                 isbn13 = value;
+            };
+        }
+    }
+    public string Cathegory
+    {
+        get => cathegory;
+        set
+        {
+            if (ValidationUtils.String(value))
+            {
+                cathegory = value;
             };
         }
     }
