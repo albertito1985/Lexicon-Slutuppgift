@@ -1,10 +1,14 @@
-﻿namespace Lexicon_Slutuppgift
+﻿using Lexicon_Slutuppgift.Core;
+using Lexicon_Slutuppgift.Menus;
+
+namespace Lexicon_Slutuppgift
 {
     internal class Program
     {
-        static void Main(string[] args)
+        static void Main()
         {
-            Console.WriteLine("Hello, World!");
+            Library.LoadLibrary();
+            AvailableMenus.mainMenu.MenuInteraction();
         }
     }
 }

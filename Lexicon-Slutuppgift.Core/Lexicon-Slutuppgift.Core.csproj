@@ -1,16 +1,13 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <OutputType>Exe</OutputType>
     <TargetFramework>net8.0</TargetFramework>
-    <RootNamespace>Lexicon_Slutuppgift</RootNamespace>
+    <RootNamespace>Lexicon_Slutuppgift.Core</RootNamespace>
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
-    <LangVersion>preview</LangVersion>
   </PropertyGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\Lexicon-Slutuppgift.Core\Lexicon-Slutuppgift.Core.csproj" />
     <ProjectReference Include="..\Slutuppgift.Utils\Slutuppgift.Utils.csproj" />
   </ItemGroup>
 
