@@ -41,7 +41,10 @@ public static class MainMenu
     }
     private static void ListBooks()
     {
-        throw new NotImplementedException();
+        ConsoleUtils.NewTitle("Book List");
+        Library.PrintCatalog();
+        Console.WriteLine("Press any key to continue");
+        Console.ReadKey();
     }
 
     private static void SearchBook()

@@ -53,7 +53,7 @@ namespace Lexicon_Slutuppgift.Menus
                 }
                 catch (ArgumentException ex)
                 {
-                    Console.WriteLine($"{ex.Message}");
+                    message = $"{ex.Message}";
                 }
 
 

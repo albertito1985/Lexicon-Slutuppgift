@@ -66,4 +66,9 @@ public class Book
 
         Isbn13 = result;
     }
+
+    public override string ToString()
+    {
+        return $"{Title} by {Author}, ISBN: {Isbn13}, Category: {Category}";
+    }
 }

@@ -68,15 +68,18 @@ public static class Library
 
         List<Book> newCatalog =result.ToList();
 
-        foreach (Book book in newCatalog)
-        {
-            Console.WriteLine(book.Title);
-        }
-
         if (Catalog.Count > newCatalog.Count)
         {
             Catalog = newCatalog;
             File.WriteAllText("library.json", JsonSerializer.Serialize(Catalog));
+        }
+    }
+
+    public static void PrintCatalog()
+    {
+        for (int i=0; i< Catalog.Count;i++)
+        {
+            Console.WriteLine($"{i+1}. {Catalog[i].ToString()}");
         }
     }
 }
