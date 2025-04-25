@@ -7,7 +7,7 @@ public class Book
     private string author;
     private string title;
     private string isbn13;
-    private string cathegory;
+    private string category;
     public string Author
     { get => author;
         set
@@ -41,14 +41,14 @@ public class Book
             };
         }
     }
-    public string Cathegory
+    public string Category
     {
-        get => cathegory;
+        get => category;
         set
         {
             if (ValidationUtils.String(value))
             {
-                cathegory = value;
+                category = value;
             };
         }
     }

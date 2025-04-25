@@ -22,6 +22,7 @@ public class RemoveBook
             string input = ConsoleUtils.Prompt("Enter a Tittle or a ISBN to remove");
             ValidationUtils.String(input);
             Book selectedBook = Library.SelectBook(input);
+            Library.RemoveBook(selectedBook);
 
             Menu.message = $"BOOK REMOVED\nTitle: {selectedBook.Title}, Author: {selectedBook.Author}, ISBN: {selectedBook.Isbn13}";
         }
@@ -29,8 +30,8 @@ public class RemoveBook
         {
             Menu.message = $"{ex.Message}";
         }
+
         
-  
     }
 
     private static void ClearLibrary()

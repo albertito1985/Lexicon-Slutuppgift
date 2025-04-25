@@ -12,45 +12,45 @@ namespace Lexicon_Slutuppgift;
 
 public static class Library
 {
-    public static List<Book> catalog { get; set; } = new();
+    public static List<Book> Catalog { get; set; } = new();
     public static void LoadLibrary()
     {
         if (File.Exists("library.json"))
         {   // Acá me quedé
             List<Book> loadingCatalog = JsonSerializer.Deserialize<List<Book>>(File.ReadAllText("library.json"));
-            catalog = loadingCatalog;
+            Catalog = loadingCatalog;
         }
     }
 
     public static void ClearLibrary()
     {
-        catalog.Clear();
+        Catalog.Clear();
         if (File.Exists("library.json"))
         {
             File.Delete("library.json");
         }
     }
 
-    public static void AddBook(string author, string title, string cathegory)
+    public static void AddBook(string author, string title, string category)
     {
         Book newBook = new();
         newBook.Author = author.ToUpper();
         newBook.Title = title.ToUpper();
-        newBook.Cathegory = cathegory.ToUpper();
+        newBook.Category = category.ToUpper();
         newBook.GenerateISBN();
 
-        catalog.Add(newBook);
+        Catalog.Add(newBook);
 
-        File.WriteAllText("library.json", JsonSerializer.Serialize(catalog));
+        File.WriteAllText("library.json", JsonSerializer.Serialize(Catalog));
     }
 
     public static Book SelectBook(string inputString)
     {
-        var selection = catalog.Where(B => B.Title == inputString.ToUpper());
+        var selection = Catalog.Where(B => B.Title == inputString.ToUpper());
 
         if (selection.Count() == 0)
         {
-            selection = catalog.Where(B => B.Isbn13 == inputString.ToUpper());
+            selection = Catalog.Where(B => B.Isbn13 == inputString.ToUpper());
         }
 
         if (selection.Count() == 0)
@@ -63,6 +63,20 @@ public static class Library
 
     public static void RemoveBook(Book inputBook)
     {
+        var result = Catalog
+            .Where(b => b.Isbn13 != inputBook.Isbn13);
 
+        List<Book> newCatalog =result.ToList();
+
+        foreach (Book book in newCatalog)
+        {
+            Console.WriteLine(book.Title);
+        }
+
+        if (Catalog.Count > newCatalog.Count)
+        {
+            Catalog = newCatalog;
+            File.WriteAllText("library.json", JsonSerializer.Serialize(Catalog));
+        }
     }
 }
