@@ -7,8 +7,8 @@ namespace Lexicon_Slutuppgift
     {
         static void Main()
         {
-            Library.LoadLibrary();
-            AvailableMenus.mainMenu.MenuInteraction();
+                Library.LoadCatalog("library");
+                AvailableMenus.mainMenu.MenuInteraction();
         }
     }
 }

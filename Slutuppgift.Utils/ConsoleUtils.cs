@@ -11,19 +11,13 @@ public static class ConsoleUtils
     public static string Prompt(string InputString)
     {
         Console.Write($"{InputString}: ");
-        return Input();
+        return Console.ReadLine();
     }
 
     public static string Ask(string InputString)
     {
         Console.WriteLine($"{InputString}");
-        return Input();
-    }
-    public static string Input()
-    {
-        string input = Console.ReadLine();
-        ValidationUtils.String(input);
-        return input;
+        return Console.ReadLine();
     }
 
     public static void NewTitle(string title)

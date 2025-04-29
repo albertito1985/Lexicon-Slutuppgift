@@ -6,10 +6,13 @@ MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Lexicon-Slutuppgift", "Lexicon - Slutuppgift\Lexicon-Slutuppgift.csproj", "{EE4DB472-B677-4330-B501-8FD3DA98C942}"
 	ProjectSection(ProjectDependencies) = postProject
 		{BBB147EA-59CC-407E-8744-24B5E3EC4BA7} = {BBB147EA-59CC-407E-8744-24B5E3EC4BA7}
-		{C56C421F-8FAF-412C-9F03-1BADE468CB09} = {C56C421F-8FAF-412C-9F03-1BADE468CB09}
 	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Slutuppgift.Tests", "Slutuppgift.Tests\Slutuppgift.Tests.csproj", "{C56C421F-8FAF-412C-9F03-1BADE468CB09}"
+	ProjectSection(ProjectDependencies) = postProject
+		{519E9C43-6D28-4C9F-A2DC-64CEC8030C38} = {519E9C43-6D28-4C9F-A2DC-64CEC8030C38}
+		{EE4DB472-B677-4330-B501-8FD3DA98C942} = {EE4DB472-B677-4330-B501-8FD3DA98C942}
+	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Slutuppgift.Utils", "Slutuppgift.Utils\Slutuppgift.Utils.csproj", "{BBB147EA-59CC-407E-8744-24B5E3EC4BA7}"
 EndProject

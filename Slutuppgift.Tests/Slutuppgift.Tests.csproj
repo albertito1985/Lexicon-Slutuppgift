@@ -17,6 +17,8 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\Lexicon - Slutuppgift\Lexicon-Slutuppgift.csproj" />
+    <ProjectReference Include="..\Lexicon-Slutuppgift.Core\Lexicon-Slutuppgift.Core.csproj" />
     <ProjectReference Include="..\Slutuppgift.Utils\Slutuppgift.Utils.csproj" />
   </ItemGroup>
 

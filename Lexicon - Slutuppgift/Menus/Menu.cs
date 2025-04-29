@@ -45,13 +45,26 @@ namespace Lexicon_Slutuppgift.Menus
                 {
                     ShowMenu();
                     string choice = PromptChoice();
-                    Option choosedOption = null;
-                    if (ValidateOption(choice, ref choosedOption))
+                    if (ValidationUtils.String(choice))
                     {
-                        choosedOption.Handler();
+                        Option choosedOption = null;
+                        if (ValidateOption(choice, ref choosedOption))
+                        {
+                            choosedOption.Handler();
+                        }
+                        else
+                        {
+                            message = "Your choice is out of range.";
+                        }
                     }
+                    else
+                    {
+                        message = "Enter a valid input.";
+                    }
+
+                        
                 }
-                catch (ArgumentException ex)
+                catch (Exception ex)
                 {
                     message = $"{ex.Message}";
                 }
@@ -60,9 +73,23 @@ namespace Lexicon_Slutuppgift.Menus
             } while (!Quit);
 
         }
+
         public void ShowMenu()
         {
-            int nameLength = menuName.Length;
+            GenerateTitle(menuName);
+
+            foreach (Option option in MenuOptionsList)
+            {
+                Console.WriteLine(option.ToString());
+
+            }
+
+            Console.WriteLine("-----------------------------------");
+        }
+
+        public void GenerateTitle(string title)
+        {
+            int nameLength = title.Length;
             var titleInitial = (35 - nameLength) / 2;
             string tittleString = "";
 
@@ -70,7 +97,7 @@ namespace Lexicon_Slutuppgift.Menus
             {
                 if (i == titleInitial)
                 {
-                    tittleString += menuName;
+                    tittleString += title;
                 }
                 else
                 {
@@ -82,23 +109,14 @@ namespace Lexicon_Slutuppgift.Menus
                 tittleString += "-";
             }
             Console.WriteLine(tittleString);
-
-            foreach (Option option in MenuOptionsList)
-            {
-                Console.WriteLine(option.ToString());
-
-            }
-
-            Console.WriteLine("-----------------------------------");
         }
+
 
         public string PromptChoice()
         {
             Console.WriteLine("Type the number of the option you want to follow.");
             Console.Write("Option: ");
-            string input = Console.ReadLine();
-            if (ValidationUtils.String(input)) return input;
-            else return "";
+            return Console.ReadLine();
         }
 
         public bool ValidateOption(string choice, ref Option choosedOption)
@@ -112,7 +130,7 @@ namespace Lexicon_Slutuppgift.Menus
                     return true;
                 }
             }
-            throw new ArgumentException("Your input is invalid.");
+            return false;
         }
 
     }

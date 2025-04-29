@@ -1,4 +1,6 @@
-﻿namespace Slutuppgift.Utils;
+﻿using System.Text.RegularExpressions;
+
+namespace Slutuppgift.Utils;
 
 public static class ValidationUtils
 {
@@ -10,7 +12,7 @@ public static class ValidationUtils
         }
         else
         {
-            throw new ArgumentException("The input is empty.");
+            return false;
         }
 
     }
@@ -21,6 +23,21 @@ public static class ValidationUtils
         {
             return true;
         }
-        return false;
+        else
+        {
+            return false;
+        }
+    }
+
+    public static bool IsNumber(string input)
+    {
+        if (Regex.IsMatch(input, @"^\d+$"))
+        {
+            return true;
+        }
+        else
+        {
+            return false;
+        }
     }
 }

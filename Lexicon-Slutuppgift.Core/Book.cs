@@ -15,7 +15,8 @@ public class Book
             if (ValidationUtils.String(value))
             {
                 author = value;
-            };
+            }
+            ;
         }
     }
     public string Title
@@ -26,7 +27,8 @@ public class Book
             if (ValidationUtils.String(value))
             {
                 title = value;
-            };
+            }
+            ;
         }
     }
     public string Isbn13
@@ -35,7 +37,8 @@ public class Book
         set
         {
             if (ValidationUtils.String(value) &&
-                ValidationUtils.StringLength(value,13,13))
+                ValidationUtils.StringLength(value,13,13) &&
+                ValidationUtils.IsNumber(value))
             {
                 isbn13 = value;
             };
@@ -54,21 +57,8 @@ public class Book
     }
     public bool OnLoan { get; set; } = false;
 
-    public void GenerateISBN()
-    {
-        Random random = new Random();
-        string result = "";
-
-        for (int i = 0; i < 13; i++)
-        {
-            result += random.Next(0, 10);
-        }
-
-        Isbn13 = result;
-    }
-
     public override string ToString()
     {
-        return $"{Title} by {Author}, ISBN: {Isbn13}, Category: {Category}";
+        return $"Title: {Title}\n   Author: {Author}\n   ISBN: {Isbn13}\n   Category: {Category}\n   {((OnLoan)?"NOT available":"Available")}";
     }
 }

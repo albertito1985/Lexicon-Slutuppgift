@@ -12,56 +12,68 @@ namespace Lexicon_Slutuppgift;
 
 public static class Library
 {
+    static string mainCatalogName = "library";
     public static List<Book> Catalog { get; set; } = new();
-    public static void LoadLibrary()
+    public static void LoadCatalog(string library)
     {
-        if (File.Exists("library.json"))
-        {   // Acá me quedé
-            List<Book> loadingCatalog = JsonSerializer.Deserialize<List<Book>>(File.ReadAllText("library.json"));
-            Catalog = loadingCatalog;
-        }
-    }
-
-    public static void ClearLibrary()
-    {
-        Catalog.Clear();
-        if (File.Exists("library.json"))
+        try
         {
-            File.Delete("library.json");
+            if (File.Exists($"{library}.json"))
+            {
+                List<Book> loadingCatalog = JsonSerializer.Deserialize<List<Book>>(File.ReadAllText($"{library}.json"));
+                Catalog = loadingCatalog;
+            }
+        }
+        catch(Exception ex)
+        {
+            Console.WriteLine($"Error loading the catalog: {ex.Message}");
+        }
+        
+    }
+
+    public static void ClearCatalog()
+    {
+        try
+        {
+            if (File.Exists($"{mainCatalogName}.json"))
+            {
+                File.Delete($"{mainCatalogName}.json");
+                Catalog.Clear();
+            }
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Error clearing the catalog: {ex.Message}");
         }
     }
 
-    public static void AddBook(string author, string title, string category)
+    public static bool AddBook(Book newBook)
     {
-        Book newBook = new();
-        newBook.Author = author.ToUpper();
-        newBook.Title = title.ToUpper();
-        newBook.Category = category.ToUpper();
-        newBook.GenerateISBN();
-
-        Catalog.Add(newBook);
-
-        File.WriteAllText("library.json", JsonSerializer.Serialize(Catalog));
+        if (newBook.Author == null) return false;
+        if (newBook.Title == null) return false;
+        if (newBook.Isbn13 == null) return false;
+        try
+        {
+            PushCatalogToMain();
+            Catalog.Add(newBook);
+            return true;
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Error Adding the book: {ex.Message}");
+            return false;
+        }
     }
 
     public static Book SelectBook(string inputString)
     {
-        var selection = Catalog.Where(B => B.Title == inputString.ToUpper());
-
-        if (selection.Count() == 0)
-        {
-            selection = Catalog.Where(B => B.Isbn13 == inputString.ToUpper());
-        }
-
-        if (selection.Count() == 0)
-        {
-            throw new ArgumentException("Book not found");
-        }
-
-        return selection.First();            
+        Book selection = Catalog.FirstOrDefault(B => B.Title == inputString.ToUpper());
+        if (selection == null) selection = Catalog.FirstOrDefault(B => B.Isbn13 == inputString.ToUpper());
+        if (selection == null) return null;
+        return selection;
     }
 
-    public static void RemoveBook(Book inputBook)
+    public static bool RemoveBook(Book inputBook)
     {
         var result = Catalog
             .Where(b => b.Isbn13 != inputBook.Isbn13);
@@ -70,16 +82,41 @@ public static class Library
 
         if (Catalog.Count > newCatalog.Count)
         {
-            Catalog = newCatalog;
-            File.WriteAllText("library.json", JsonSerializer.Serialize(Catalog));
+            try
+            {
+                PushCatalogToMain();
+                Catalog = newCatalog;
+                return true;
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error Removing the book: {ex.Message}");
+                return false;
+            }            
+        }
+        return false;
+    }
+
+    public static bool LoanBook(string inputISBN13)
+    {
+        Book loanBook = Catalog.FirstOrDefault(b => b.Isbn13 == inputISBN13);
+        if (loanBook == null) return false;
+        loanBook.OnLoan = true;
+        try
+        {
+            PushCatalogToMain();
+            return true;
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Error Updating the catalog: {ex.Message}");
+            loanBook.OnLoan = false;
+            return false;
         }
     }
 
-    public static void PrintCatalog()
+    public static void PushCatalogToMain() 
     {
-        for (int i=0; i< Catalog.Count;i++)
-        {
-            Console.WriteLine($"{i+1}. {Catalog[i].ToString()}");
-        }
+        File.WriteAllText($"{mainCatalogName}.json", JsonSerializer.Serialize(Catalog));
     }
 }

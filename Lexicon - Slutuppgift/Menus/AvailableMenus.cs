@@ -9,6 +9,5 @@ namespace Lexicon_Slutuppgift.Menus
     public static class AvailableMenus
     {
        public static new Menu mainMenu = new ("Main Menu", MainMenu.optionList);
-       public static new Menu removeMenu = new("Remove a book Menu", RemoveBook.optionList);
     }
 }
