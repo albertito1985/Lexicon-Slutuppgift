@@ -5,7 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Slutuppgift.Utils;
 
-namespace Lexicon_Slutuppgift.Menus
+namespace Lexicon_Slutuppgift
 {
     public class Menu
     {

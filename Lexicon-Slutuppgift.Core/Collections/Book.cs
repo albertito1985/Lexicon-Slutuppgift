@@ -1,12 +1,12 @@
 ﻿using Slutuppgift.Utils;
 
-namespace Lexicon_Slutuppgift.Core;
+namespace Lexicon_Slutuppgift.Core.Collections;
 
-public class Book
+public class Book : IIdentifiable
 {
     private string author;
-    private string title;
-    private string isbn13;
+    private string name;
+    private string idNr;
     private string category;
     public string Author
     { get => author;
@@ -19,28 +19,28 @@ public class Book
             ;
         }
     }
-    public string Title
+    public string Name
     {
-        get => title;
+        get => name;
         set
         {
             if (ValidationUtils.String(value))
             {
-                title = value;
+                name = value;
             }
             ;
         }
     }
-    public string Isbn13
+    public string IdNr
     {
-        get => isbn13;
+        get => idNr;
         set
         {
             if (ValidationUtils.String(value) &&
                 ValidationUtils.StringLength(value,13,13) &&
                 ValidationUtils.IsNumber(value))
             {
-                isbn13 = value;
+                idNr = value;
             };
         }
     }
@@ -59,6 +59,6 @@ public class Book
 
     public override string ToString()
     {
-        return $"Title: {Title}\n   Author: {Author}\n   ISBN: {Isbn13}\n   Category: {Category}\n   {((OnLoan)?"NOT available":"Available")}";
+        return $"Title: {Name}\n   Author: {Author}\n   ISBN: {IdNr}\n   Category: {Category}\n   {(OnLoan?"NOT available":"Available")}";
     }
 }
