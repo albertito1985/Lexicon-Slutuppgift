@@ -2,11 +2,9 @@
 
 namespace Lexicon_Slutuppgift.Core.Collections;
 
-public class Book : IIdentifiable
+public class Book : Identifiable
 {
     private string author;
-    private string name;
-    private string idNr;
     private string category;
     public string Author
     { get => author;
@@ -17,31 +15,6 @@ public class Book : IIdentifiable
                 author = value;
             }
             ;
-        }
-    }
-    public string Name
-    {
-        get => name;
-        set
-        {
-            if (ValidationUtils.String(value))
-            {
-                name = value;
-            }
-            ;
-        }
-    }
-    public string IdNr
-    {
-        get => idNr;
-        set
-        {
-            if (ValidationUtils.String(value) &&
-                ValidationUtils.StringLength(value,13,13) &&
-                ValidationUtils.IsNumber(value))
-            {
-                idNr = value;
-            };
         }
     }
     public string Category

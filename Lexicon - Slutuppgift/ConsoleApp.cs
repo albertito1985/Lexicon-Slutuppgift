@@ -10,24 +10,10 @@ using Slutuppgift.Utils;
 namespace Lexicon_Slutuppgift;
 public class ConsoleApp
 {
-    BooksHandler library;
-    ItemHandler members;
-    Menu mainMenu;
-    Menu adminMenu;
-
-    List<Option> mainMenuOptions = new(){
-        new Option("Add a book", AddBook),
-        new Option("Remove a book", RemoveBook),
-        new Option("List all books", ListBooks),
-        new Option("Search for a book", SearchBook),
-        new Option("Loan a book", LoanBook),
-        new Option("Admin Area", AdminArea)
-    };
-
-    List<Option> adminMenuOptions = new(){
-        new Option("Add Dummy library", LoadDummyLibrary),
-        new Option("Clear Library", ClearLibrary)
-        };
+     BooksHandler library;
+     ItemHandler<Member> members;
+     Menu mainMenu;
+     Menu adminMenu;
 
     public void start()
     {
@@ -37,15 +23,30 @@ public class ConsoleApp
 
     public void setUp()
     {
-        library = new BooksHandler("library");
+        library = new("library");
         members = new("members");
+
+        List<Option> mainMenuOptions = new(){
+            new Option("Add a book", AddBook),
+            new Option("Remove a book", RemoveBook),
+            new Option("List all books", ListBooks),
+            new Option("Search for a book", SearchBook),
+            new Option("Loan a book", LoanBook),
+            new Option("Admin Area", AdminArea)
+        };
+
+        List<Option> adminMenuOptions = new(){
+            new Option("Add Dummy library", LoadDummyLibrary),
+            new Option("Clear Library", ClearLibrary)
+        };
+
         mainMenu = new("Main Menu", mainMenuOptions);
         adminMenu = new("Admin Menu", adminMenuOptions);
     }
 
 
     //Main Menu
-    private void AddBook()
+    public void AddBook()
     {
         Book newBook = new();
         do
@@ -73,20 +74,19 @@ public class ConsoleApp
             else Console.WriteLine("Please enter a 13 digits ISBN.");
         } while (newBook.IdNr == null);
 
-
         if (library.Add(newBook)) Menu.message = "Book added";
     }
 
-    private void RemoveBook()
+    public void RemoveBook()
     {
         string input = ConsoleUtils.Prompt("Enter a Tittle or a ISBN to remove");
 
         if (ValidationUtils.String(input))
         {
-            Book selectedBook = ItemCollection.SelectBook(input);
+            Book selectedBook = (Book)library.Select(input);
             if (selectedBook != null)
             {
-                if (ItemCollection.RemoveBook(selectedBook))
+                if (library.Remove(selectedBook))
                     Menu.message = $"BOOK REMOVED\nTitle: {selectedBook.Name}, Author: {selectedBook.Author}, ISBN: {selectedBook.IdNr}";
             }
             else
@@ -98,28 +98,30 @@ public class ConsoleApp
         {
             Menu.message = "Please enter a valid title or ISBN.";
         }
-
     }
 
-    private void ListBooks()
+    public void ListBooks()
     {
         ConsoleUtils.NewTitle("Book Catalog");
 
-        for (int i = 0; i < ItemCollection.Catalog.Count; i++)
+        var catalogList = library.Catalog.ToList();
+
+        for (int i = 0; i < catalogList.Count; i++)
         {
-            Console.WriteLine($"{i + 1}. {ItemCollection.Catalog[i].ToString()}\n");
+            Book book = (Book)catalogList[i];
+            Console.WriteLine($"{i + 1}. {book.ToString()}\n");
         }
 
         Console.WriteLine("Press any key to continue");
         Console.ReadKey();
     }
 
-    private void SearchBook()
+    public void SearchBook()
     {
         string input = ConsoleUtils.Prompt("Enter a Tittle or a ISBN to search");
         if (ValidationUtils.String(input))
         {
-            Book selectedBook = ItemCollection.SelectBook(input);
+            Identifiable selectedBook = library.Select(input);
 
             if (selectedBook != null)
             {
@@ -139,31 +141,31 @@ public class ConsoleApp
         }
     }
 
-    private void LoanBook()
+    public void LoanBook()
     {
         string input = ConsoleUtils.Prompt("Enter a ISBN13 number");
         ValidationUtils.String(input);
-        if (ItemCollection.LoanBook(input)) Menu.message = "Book loaned successfully";
+        if (library.Loan(input)) Menu.message = "Book loaned successfully";
 
     }
 
-    private void AdminArea()
+    public void AdminArea()
     {
-        AvailableMenus.adminMenu.MenuInteraction();
+        adminMenu.MenuInteraction();
     }
 
 
     //Admin Menu
-    private void ClearLibrary()
+    public void ClearLibrary()
     {
-        ItemCollection.ClearCatalog();
+        library.ClearCatalog();
         Menu.message = "Library Cleared";
     }
 
-    private void LoadDummyLibrary()
+    public void LoadDummyLibrary()
     {
-        ItemCollection.LoadCatalog("dummy");
-        ItemCollection.PushCatalogToMain();
+        library.LoadCatalogFile("dummy");
+        library.PushCatalogToMain();
         Menu.message = "Dummy Library Loaded";
     }
 }

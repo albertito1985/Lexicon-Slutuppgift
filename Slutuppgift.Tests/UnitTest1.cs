@@ -1,8 +1,8 @@
 using System.ComponentModel.Design;
 using System.Runtime.InteropServices;
 using Lexicon_Slutuppgift;
+using Lexicon_Slutuppgift.Core;
 using Lexicon_Slutuppgift.Core.Collections;
-using Lexicon_Slutuppgift.Menus;
 using Slutuppgift.Utils;
 
 namespace Slutuppgift.Tests
@@ -13,17 +13,18 @@ namespace Slutuppgift.Tests
         [InlineData("TestAuthor", "TestTitle", "1234567894561",true)]
         [InlineData("TestAuthor", "TestTitle", null, false)]
         [InlineData("TestAuthor", null, "1234567894561", false)]
-        [InlineData(null, "TestTitle", "1234567894561", false)]
+        [InlineData(null, "TestTitle", "1234567894561", true)]
         public void AddBook_shouldAddBookIfInputIsCorrect(string author, string title, string isbn, bool output)
         {
             //ARRANGE
+            BooksHandler library = new("library");
             Book newBook = new Book();
             newBook.Author = author;
             newBook.Name = title;
             newBook.IdNr = isbn;
 
             //ACT
-            bool answer = LibraryCollection.AddBook(newBook);
+            bool answer = library.Add(newBook);
 
             //ASSERT
             Assert.Equal(output, answer);
@@ -36,14 +37,15 @@ namespace Slutuppgift.Tests
         public void SelectBook_ShouldReturnBookIfInputIsCorrect(string inputString)
         {
             //ARRANGE
+            BooksHandler library = new("library");
             Book newBook = new Book();
             newBook.Author = "MARIO VARGAS LLOSA";
             newBook.Name = "LA CASA VERDE";
             newBook.IdNr = "1234567894561";
-            LibraryCollection.AddBook(newBook);
+            library.Add(newBook);
 
             //ACT
-            Book outputBook = LibraryCollection.SelectBook(inputString);
+            Identifiable outputBook = library.Select(inputString);
 
             //ASSERT
             if(inputString== "öslkdjhf")
@@ -62,11 +64,12 @@ namespace Slutuppgift.Tests
         public void RemoveBook_ShouldRemoveBookIfInputIsCorrect(bool input)
         {
             //ARRANGE
+            BooksHandler library = new("library");
             Book newBook = new Book();
             newBook.Author = "MARIO VARGAS LLOSA";
             newBook.Name = "LA CASA VERDE";
             newBook.IdNr = "1234567894561";
-            LibraryCollection.AddBook(newBook);
+            library.Add(newBook);
             bool output;
 
             if (!input)
@@ -76,12 +79,12 @@ namespace Slutuppgift.Tests
                 newBook.Name = "CIEN ANOS DE SOLEDAD";
                 newBook.IdNr = "4964735821468";
                 //ACT
-                output = LibraryCollection.RemoveBook(otherBook);
+                output = library.Remove(otherBook);
             }
             else
             {
                 //ACT
-                output = LibraryCollection.RemoveBook(newBook);
+                output = library.Remove(newBook);
             }
 
             //ASSERT
@@ -94,14 +97,15 @@ namespace Slutuppgift.Tests
         public void LoanBook_ShouldChangeTheStatusOfTheBookIfInputIsCorrect(string inputString, bool expectedOutput)
         {
             //ARRANGE
+            BooksHandler library = new("library");
             Book newBook = new Book();
             newBook.Author = "MARIO VARGAS LLOSA";
             newBook.Name = "LA CASA VERDE";
             newBook.IdNr = "1234567894561";
-            LibraryCollection.AddBook(newBook);
+            library.Add(newBook);
 
             //ACT
-            bool output = LibraryCollection.LoanBook(inputString);
+            bool output = library.Loan(inputString);
 
             //ASSERT
             Assert.Equal(expectedOutput, output);

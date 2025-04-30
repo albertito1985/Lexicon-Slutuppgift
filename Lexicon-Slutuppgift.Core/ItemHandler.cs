@@ -9,10 +9,10 @@ using Lexicon_Slutuppgift.Core.Collections;
 
 namespace Lexicon_Slutuppgift.Core;
 
-public class ItemHandler
+public class ItemHandler<T> where T : Identifiable
 {
     private string mainCatalogName;
-    public LibraryCollection<IIdentifiable> Catalog { get; set; } = new LibraryCollection<IIdentifiable>();
+    public List<T> Catalog { get; set; } = new List<T>();
     public ItemHandler(string inputString)
     {
         mainCatalogName = inputString;
@@ -25,7 +25,7 @@ public class ItemHandler
         {
             if (File.Exists($"{library}.json"))
             {
-               Catalog = JsonSerializer.Deserialize<LibraryCollection<IIdentifiable>>(File.ReadAllText($"{library}.json"));
+               Catalog = JsonSerializer.Deserialize<List<T>>(File.ReadAllText($"{library}.json"));
             }
         }
         catch (Exception ex)
@@ -50,8 +50,10 @@ public class ItemHandler
         }
     }
 
-    public bool Add(IIdentifiable newItem)
+    public bool Add(T newItem)
     {
+        if (newItem.Name == null) return false;
+        if (newItem.IdNr == null) return false;
         try
         {
             PushCatalogToMain();
@@ -65,20 +67,20 @@ public class ItemHandler
         }
     }
 
-    public IIdentifiable Select(string inputString)
+    public T Select(string inputString)
     {
-        IIdentifiable selection = (IIdentifiable)Catalog.FirstOrDefault(i => i.Name == inputString.ToUpper());
+        T selection = (T)Catalog.FirstOrDefault(i => i.Name == inputString.ToUpper());
         if (selection == null) selection = Catalog.FirstOrDefault(i => i.IdNr == inputString.ToUpper());
         if (selection == null) return null;
         return selection;
     }
 
-    public bool Remove(IIdentifiable inputBook) //Revisar
+    public bool Remove(T inputBook) //Revisar
     {
         var result = Catalog
             .Where(i => i.IdNr != inputBook.IdNr);
 
-        LibraryCollection<IIdentifiable> newCatalog = (LibraryCollection<IIdentifiable>)result;
+        List<T> newCatalog = (List<T>)result;
 
         if (Catalog.Count > newCatalog.Count)
         {

@@ -7,12 +7,25 @@ using Slutuppgift.Utils;
 
 namespace Lexicon_Slutuppgift.Core.Collections
 {
-    public class Card : IIdentifiable
+    public class Identifiable
     {
+        private string name;
         private string idNr;
-        public string IdNr
+        public string Name
         {
-            get;
+            get => name;
+            set
+            {
+                if (ValidationUtils.String(value))
+                {
+                    name = value;
+                }
+                ;
+            }
+        }
+        public virtual string IdNr
+        {
+            get => idNr;
             set
             {
                 if (ValidationUtils.String(value) &&
@@ -23,12 +36,6 @@ namespace Lexicon_Slutuppgift.Core.Collections
                 }
                 ;
             }
-        }
-        public string Name { get ; set=> ValidationUtils.String(value); }
-
-        Card(string inputName)
-        {
-            Name = inputName;
         }
     }
 }

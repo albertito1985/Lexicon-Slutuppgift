@@ -1,5 +1,4 @@
 ﻿using Lexicon_Slutuppgift.Core;
-using Lexicon_Slutuppgift.Menus;
 
 namespace Lexicon_Slutuppgift;
 

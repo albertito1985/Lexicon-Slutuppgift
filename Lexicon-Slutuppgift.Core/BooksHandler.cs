@@ -7,7 +7,7 @@ using Lexicon_Slutuppgift.Core.Collections;
 
 namespace Lexicon_Slutuppgift.Core
 {
-    public class BooksHandler : ItemHandler
+    public class BooksHandler : ItemHandler<Book>
     {
         public BooksHandler(string inputString) : base(inputString)
         {
@@ -15,7 +15,7 @@ namespace Lexicon_Slutuppgift.Core
 
         public bool Loan(string inputISBN13)
         {
-            IIdentifiable loanBook = Catalog.FirstOrDefault(b => b.IdNr == inputISBN13);
+            Identifiable loanBook = Catalog.FirstOrDefault(b => b.IdNr == inputISBN13);
             Book loanBookBook = (Book)loanBook;
             if (loanBookBook == null) return false;
             loanBookBook.OnLoan = true;
