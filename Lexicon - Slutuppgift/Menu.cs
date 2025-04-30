@@ -5,7 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Slutuppgift.Utils;
 
-namespace Lexicon_Slutuppgift.Menus
+namespace Lexicon_Slutuppgift
 {
     public class Menu
     {
@@ -13,16 +13,23 @@ namespace Lexicon_Slutuppgift.Menus
         private List<Option> MenuOptionsList { get; set; }
         private string menuName;
         public int Length { get; private set; }
-
         internal bool Quit { get; set; } = false;
+        internal static bool RootMenu { get; set; } = true;
 
         public Menu(string inputName, List<Option> optionsList)
         {
             menuName = inputName;
             MenuOptionsList = optionsList;
-            Option.InputCount = 0;
             Length = MenuOptionsList.Count;
-            MenuOptionsList.Add(new Option("Exit", ExitMenu) { Command = "E" });
+            if (RootMenu) 
+            {
+                MenuOptionsList.Add(new Option("Exit", ExitMenu) { Command = "E" });
+                RootMenu = false;
+            }
+            else
+                MenuOptionsList.Add(new Option("Back", ExitMenu) { Command = "B" });
+
+            Option.InputCount = 0;
         }
 
         private void ExitMenu()

@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Lexicon_Slutuppgift.Menus;
+namespace Lexicon_Slutuppgift;
 
 public class Option
 {

@@ -2,7 +2,7 @@ using System.ComponentModel.Design;
 using System.Runtime.InteropServices;
 using Lexicon_Slutuppgift;
 using Lexicon_Slutuppgift.Core;
-using Lexicon_Slutuppgift.Menus;
+using Lexicon_Slutuppgift.Core.Collections;
 using Slutuppgift.Utils;
 
 namespace Slutuppgift.Tests
@@ -17,13 +17,14 @@ namespace Slutuppgift.Tests
         public void AddBook_shouldAddBookIfInputIsCorrect(string author, string title, string isbn, bool output)
         {
             //ARRANGE
+            BooksHandler library = new("library");
             Book newBook = new Book();
             newBook.Author = author;
-            newBook.Title = title;
-            newBook.Isbn13 = isbn;
+            newBook.Name = title;
+            newBook.IdNr = isbn;
 
             //ACT
-            bool answer = Library.AddBook(newBook);
+            bool answer = library.Add(newBook);
 
             //ASSERT
             Assert.Equal(output, answer);
@@ -36,14 +37,15 @@ namespace Slutuppgift.Tests
         public void SelectBook_ShouldReturnBookIfInputIsCorrect(string inputString)
         {
             //ARRANGE
+            BooksHandler library = new("library");
             Book newBook = new Book();
             newBook.Author = "MARIO VARGAS LLOSA";
-            newBook.Title = "LA CASA VERDE";
-            newBook.Isbn13 = "1234567894561";
-            Library.AddBook(newBook);
+            newBook.Name = "LA CASA VERDE";
+            newBook.IdNr = "1234567894561";
+            library.Add(newBook);
 
             //ACT
-            Book outputBook = Library.SelectBook(inputString);
+            Identification outputBook = library.Select(inputString);
 
             //ASSERT
             if(inputString== "öslkdjhf")
@@ -52,7 +54,7 @@ namespace Slutuppgift.Tests
             }
             else
             {
-                Assert.True(outputBook.Title == inputString.ToUpper() || outputBook.Isbn13 == inputString);
+                Assert.True(outputBook.Name == inputString.ToUpper() || outputBook.IdNr == inputString);
             }
         }
 
@@ -62,26 +64,27 @@ namespace Slutuppgift.Tests
         public void RemoveBook_ShouldRemoveBookIfInputIsCorrect(bool input)
         {
             //ARRANGE
+            BooksHandler library = new("library");
             Book newBook = new Book();
             newBook.Author = "MARIO VARGAS LLOSA";
-            newBook.Title = "LA CASA VERDE";
-            newBook.Isbn13 = "1234567894561";
-            Library.AddBook(newBook);
+            newBook.Name = "LA CASA VERDE";
+            newBook.IdNr = "1234567894561";
+            library.Add(newBook);
             bool output;
 
             if (!input)
             {
                 Book otherBook = new Book();
                 newBook.Author = "GABRIEL GARCIA MARQUEZ";
-                newBook.Title = "CIEN ANOS DE SOLEDAD";
-                newBook.Isbn13 = "4964735821468";
+                newBook.Name = "CIEN ANOS DE SOLEDAD";
+                newBook.IdNr = "4964735821468";
                 //ACT
-                output = Library.RemoveBook(otherBook);
+                output = library.Remove(otherBook);
             }
             else
             {
                 //ACT
-                output = Library.RemoveBook(newBook);
+                output = library.Remove(newBook);
             }
 
             //ASSERT
@@ -94,14 +97,15 @@ namespace Slutuppgift.Tests
         public void LoanBook_ShouldChangeTheStatusOfTheBookIfInputIsCorrect(string inputString, bool expectedOutput)
         {
             //ARRANGE
+            BooksHandler library = new("library");
             Book newBook = new Book();
             newBook.Author = "MARIO VARGAS LLOSA";
-            newBook.Title = "LA CASA VERDE";
-            newBook.Isbn13 = "1234567894561";
-            Library.AddBook(newBook);
+            newBook.Name = "LA CASA VERDE";
+            newBook.IdNr = "1234567894561";
+            library.Add(newBook);
 
             //ACT
-            bool output = Library.LoanBook(inputString);
+            bool output = library.Loan(inputString);
 
             //ASSERT
             Assert.Equal(expectedOutput, output);
