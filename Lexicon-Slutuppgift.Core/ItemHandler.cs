@@ -75,7 +75,7 @@ public class ItemHandler<T> where T : Identification
         return selection;
     }
 
-    public bool Remove(T inputBook) //Revisar
+    public bool Remove(T inputBook)
     {
         var result = Catalog
             .Where(i => i.IdNr != inputBook.IdNr);

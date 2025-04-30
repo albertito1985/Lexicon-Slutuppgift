@@ -32,6 +32,6 @@ public class Book : Identification
 
     public override string ToString()
     {
-        return $"Title: {Name}\n   Author: {Author}\n   ISBN: {IdNr}\n   Category: {Category}\n   {(OnLoan?"NOT available":"Available")}";
+        return $"Title: {Name}\nAuthor: {Author}\nISBN: {IdNr}\nCategory: {Category}\n{(OnLoan?"NOT available":"Available")}";
     }
 }

@@ -1,9 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection.Metadata;
 using System.Text;
 using System.Threading.Tasks;
 using Lexicon_Slutuppgift.Core.Collections;
+using Slutuppgift.Utils;
 
 namespace Lexicon_Slutuppgift.Core
 {
@@ -48,6 +50,30 @@ namespace Lexicon_Slutuppgift.Core
                 Console.WriteLine($"Error adding the book: {ex.Message}");
                 return false;
             }
+        }
+
+        public void GenerateBorrowedReport(string path)
+        {
+            var loaned = Catalog.Where(i => i.OnLoan == true).ToList();
+            List<Book> loanedBooks = (List<Book>)loaned;
+            if (loanedBooks.Count == 0)
+            {
+                Console.WriteLine("No books are currently loaned.");
+            }
+            else
+            {
+                string fileExport = "LOANED BOOKS\n";
+                ConsoleUtils.NewTitle("Loaned Books");
+
+                for (int i = 0; i < loanedBooks.Count; i++)
+                {
+                    string newBook = $"\n{i + 1}. {loanedBooks[i].ToString()}\n";
+                    fileExport += newBook;
+                    Console.WriteLine(newBook);
+                }
+                File.WriteAllText(path, fileExport);
+            }
+            
         }
     }
 }

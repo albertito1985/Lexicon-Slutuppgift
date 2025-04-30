@@ -61,7 +61,8 @@ public class ConsoleApp
 
         List<Option> adminMenuOptions = new(){
             new Option("Add Dummy library", LoadDummyLibrary),
-            new Option("Clear Library", ClearLibrary)
+            new Option("Clear Library", ClearLibrary),
+            new Option("Report Borrowed Books", ReportBorrowed)
         };
         adminMenu = new("Admin Menu", adminMenuOptions);
 
@@ -301,6 +302,22 @@ public class ConsoleApp
         library.LoadCatalogFile("dummy");
         library.PushCatalogToMain();
         Menu.message = "Dummy Library Loaded";
+    }
+
+    public void ReportBorrowed()
+    {
+        bool outVariable = true;
+        int count = 0;
+        string number = (count == 0) ? "" : count.ToString();
+        string documentsPath = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments);
+        string pathString = $"{documentsPath}\\BorrowedBooksReport{number}.txt";
+        do
+        {
+            if (!File.Exists(pathString)) outVariable = false;
+        }
+        while (outVariable);
+        library.GenerateBorrowedReport(pathString);
+        Menu.message = $"Report generated\nYou can find your new report at {pathString}";
     }
 
     #endregion
