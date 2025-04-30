@@ -2,7 +2,7 @@
 
 namespace Lexicon_Slutuppgift.Core.Collections;
 
-public class Book : Identifiable
+public class Book : Identification
 {
     private string author;
     private string category;

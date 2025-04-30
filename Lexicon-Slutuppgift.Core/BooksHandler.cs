@@ -15,7 +15,7 @@ namespace Lexicon_Slutuppgift.Core
 
         public bool Loan(string inputISBN13)
         {
-            Identifiable loanBook = Catalog.FirstOrDefault(b => b.IdNr == inputISBN13);
+            Identification loanBook = Catalog.FirstOrDefault(b => b.IdNr == inputISBN13);
             Book loanBookBook = (Book)loanBook;
             if (loanBookBook == null) return false;
             loanBookBook.OnLoan = true;
@@ -32,5 +32,24 @@ namespace Lexicon_Slutuppgift.Core
                 return false;
             }
         }
+        public override bool Add(Book newItem)
+        {
+            if (newItem.Author == null) return false;
+            if (newItem.Name == null) return false;
+            if (newItem.IdNr == null) return false;
+            try
+            {
+                Catalog.Add(newItem);
+                PushCatalogToMain();
+                return true;
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error adding the book: {ex.Message}");
+                return false;
+            }
+        }
     }
 }
+
+    

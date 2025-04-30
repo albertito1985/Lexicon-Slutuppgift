@@ -9,7 +9,7 @@ using Lexicon_Slutuppgift.Core.Collections;
 
 namespace Lexicon_Slutuppgift.Core;
 
-public class ItemHandler<T> where T : Identifiable
+public class ItemHandler<T> where T : Identification
 {
     private string mainCatalogName;
     public List<T> Catalog { get; set; } = new List<T>();
@@ -50,14 +50,14 @@ public class ItemHandler<T> where T : Identifiable
         }
     }
 
-    public bool Add(T newItem)
+    public virtual bool Add(T newItem)
     {
         if (newItem.Name == null) return false;
         if (newItem.IdNr == null) return false;
         try
         {
-            PushCatalogToMain();
             Catalog.Add(newItem);
+            PushCatalogToMain();
             return true;
         }
         catch (Exception ex)
@@ -80,14 +80,14 @@ public class ItemHandler<T> where T : Identifiable
         var result = Catalog
             .Where(i => i.IdNr != inputBook.IdNr);
 
-        List<T> newCatalog = (List<T>)result;
+        List<T> newCatalog = result.ToList();
 
         if (Catalog.Count > newCatalog.Count)
         {
             try
             {
-                PushCatalogToMain();
                 Catalog = newCatalog;
+                PushCatalogToMain();
                 return true;
             }
             catch (Exception ex)

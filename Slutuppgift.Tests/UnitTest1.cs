@@ -13,7 +13,7 @@ namespace Slutuppgift.Tests
         [InlineData("TestAuthor", "TestTitle", "1234567894561",true)]
         [InlineData("TestAuthor", "TestTitle", null, false)]
         [InlineData("TestAuthor", null, "1234567894561", false)]
-        [InlineData(null, "TestTitle", "1234567894561", true)]
+        [InlineData(null, "TestTitle", "1234567894561", false)]
         public void AddBook_shouldAddBookIfInputIsCorrect(string author, string title, string isbn, bool output)
         {
             //ARRANGE
@@ -45,7 +45,7 @@ namespace Slutuppgift.Tests
             library.Add(newBook);
 
             //ACT
-            Identifiable outputBook = library.Select(inputString);
+            Identification outputBook = library.Select(inputString);
 
             //ASSERT
             if(inputString== "öslkdjhf")

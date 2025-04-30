@@ -7,28 +7,18 @@ using Slutuppgift.Utils;
 
 namespace Lexicon_Slutuppgift.Core.Collections
 {
-    public class Member : Identifiable
+    public class Member : Identification
     {
-        private string idNr;
-        public string IdNr
-        {
-            get;
-            set
-            {
-                if (ValidationUtils.String(value) &&
-                    ValidationUtils.StringLength(value, 13, 13) &&
-                    ValidationUtils.IsNumber(value))
-                {
-                    idNr = value;
-                }
-                ;
-            }
-        }
-        public string Name { get ; set=> ValidationUtils.String(value); }
+        public string Address { get ; set; }
+        public string PhoneNumber { get; set; }
 
-        Member(string inputName)
+        public override string ToString()
         {
-            Name = inputName;
+            return $"Name: {Name}\n" +
+                   $"Address: {Address}\n" +
+                   $"Phone Number: {PhoneNumber}\n" +
+                   $"Member ID: {IdNr}";
+            ;
         }
     }
 }

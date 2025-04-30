@@ -11,9 +11,11 @@ namespace Lexicon_Slutuppgift;
 public class ConsoleApp
 {
      BooksHandler library;
-     ItemHandler<Member> members;
+     MembersHandler members;
      Menu mainMenu;
      Menu adminMenu;
+     Menu catalogMenu;
+     Menu membersMenu;
 
     public void start()
     {
@@ -23,29 +25,69 @@ public class ConsoleApp
 
     public void setUp()
     {
-        library = new("library");
-        members = new("members");
+        try
+        {
+            library = new("library");
+            members = new("members");
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine(ex.Message);
+        }
 
         List<Option> mainMenuOptions = new(){
+            new Option("Library Catalog", LibraryCatalog),
+            new Option("Library Members", LibraryMembers),
+            new Option("Admin area", AdminArea)
+        };
+        mainMenu = new("Main Menu", mainMenuOptions);
+
+        List<Option> catalogMenuOptions = new(){
             new Option("Add a book", AddBook),
             new Option("Remove a book", RemoveBook),
             new Option("List all books", ListBooks),
             new Option("Search for a book", SearchBook),
-            new Option("Loan a book", LoanBook),
-            new Option("Admin Area", AdminArea)
+            new Option("Loan a book", LoanBook)
         };
+        catalogMenu = new("Catalog Menu", catalogMenuOptions);
+
+        List<Option> membersMenuOptions = new(){
+            new Option("Add a member", AddMember),
+            new Option("Remove a member", RemoveMember),
+            new Option("List all members", ListMembers),
+            new Option("Search for a member", SearchMember)
+        };
+        membersMenu = new("Members Menu", membersMenuOptions);
 
         List<Option> adminMenuOptions = new(){
             new Option("Add Dummy library", LoadDummyLibrary),
             new Option("Clear Library", ClearLibrary)
         };
-
-        mainMenu = new("Main Menu", mainMenuOptions);
         adminMenu = new("Admin Menu", adminMenuOptions);
+
     }
 
-
+    #region Main Menu
     //Main Menu
+    public void LibraryCatalog()
+    {
+        catalogMenu.MenuInteraction();
+    }
+
+    public void LibraryMembers()
+    {
+        membersMenu.MenuInteraction();
+    }
+
+    public void AdminArea()
+    {
+        adminMenu.MenuInteraction();
+    }
+
+    #endregion
+
+    #region Catalog Menu
+    //Catalog Menu
     public void AddBook()
     {
         Book newBook = new();
@@ -83,7 +125,7 @@ public class ConsoleApp
 
         if (ValidationUtils.String(input))
         {
-            Book selectedBook = (Book)library.Select(input);
+            Book selectedBook = library.Select(input);
             if (selectedBook != null)
             {
                 if (library.Remove(selectedBook))
@@ -121,12 +163,12 @@ public class ConsoleApp
         string input = ConsoleUtils.Prompt("Enter a Tittle or a ISBN to search");
         if (ValidationUtils.String(input))
         {
-            Identifiable selectedBook = library.Select(input);
+            Identification selectedBook = library.Select(input);
 
             if (selectedBook != null)
             {
                 ConsoleUtils.NewTitle("Book Found");
-                Console.WriteLine(selectedBook.ToString());
+                Console.WriteLine($"\n{selectedBook.ToString()}\n");
                 Console.Write("Press any key to continue");
                 Console.ReadKey();
             }
@@ -149,12 +191,104 @@ public class ConsoleApp
 
     }
 
-    public void AdminArea()
+    #endregion
+
+    #region Members Menu
+    //Members Menu
+
+    public void AddMember()
     {
-        adminMenu.MenuInteraction();
+        Member newMember = new();
+        do
+        {
+            string input = ConsoleUtils.Prompt("Name").ToUpper();
+            if (ValidationUtils.String(input)) newMember.Name = input;
+            else Console.WriteLine("Please enter an name.");
+        } while (newMember.Name == null);
+        do
+        {
+            string input = ConsoleUtils.Prompt("Phonenumber").ToUpper();
+            if (ValidationUtils.String(input)) newMember.PhoneNumber = input;
+            else Console.WriteLine("Please enter a phonenumber.");
+        } while (newMember.PhoneNumber == null);
+        do
+        {
+            string input = ConsoleUtils.Prompt("Address").ToUpper();
+            if (ValidationUtils.String(input)) newMember.Address = input;
+            else Console.WriteLine("Please enter an address.");
+        } while (newMember.Address == null);
+        
+
+        if (members.Add(newMember)) Menu.message = "Member added";
     }
 
+    public void RemoveMember()
+    {
+        string input = ConsoleUtils.Prompt("Enter a member number to remove");
 
+        if (ValidationUtils.String(input))
+        {
+            Member selectedMember = members.Select(input);
+            if (selectedMember != null)
+            {
+                if (members.Remove(selectedMember))
+                    Menu.message = $"MEMBER REMOVED\nTitle: {selectedMember.Name}, Number: {selectedMember.IdNr}";
+            }
+            else
+            {
+                Menu.message = "Member not found.";
+            }
+        }
+        else
+        {
+            Menu.message = "Please enter a valid member number.";
+        }
+    }
+
+    public void ListMembers()
+    {
+        ConsoleUtils.NewTitle("Member Catalog");
+
+        var catalogList = members.Catalog.ToList();
+
+        for (int i = 0; i < catalogList.Count; i++)
+        {
+            Member member = (Member)catalogList[i];
+            Console.WriteLine($"{i + 1}. {member.ToString()}\n");
+        }
+
+        Console.WriteLine("Press any key to continue");
+        Console.ReadKey();
+    }
+
+    public void SearchMember()
+    {
+        string input = ConsoleUtils.Prompt("Enter a Namme or a member number to search");
+        if (ValidationUtils.String(input))
+        {
+            Identification selectedMember = members.Select(input);
+
+            if (selectedMember != null)
+            {
+                ConsoleUtils.NewTitle("Member Found");
+                Console.WriteLine($"\n{selectedMember.ToString()}\n");
+                Console.Write("Press any key to continue");
+                Console.ReadKey();
+            }
+            else
+            {
+                Menu.message = $"No member found with the name or member number: {input}";
+            }
+        }
+        else
+        {
+            Menu.message = "Enter a valid Name or member number.";
+        }
+    }
+
+    #endregion
+
+    #region Admin Menu
     //Admin Menu
     public void ClearLibrary()
     {
@@ -168,4 +302,6 @@ public class ConsoleApp
         library.PushCatalogToMain();
         Menu.message = "Dummy Library Loaded";
     }
+
+    #endregion
 }
