@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Text.Json;
@@ -44,21 +45,22 @@ public class ConsoleApp
         }
 
         List<Option> mainMenuOptions = new(){
-            new Option("Book Catalog", LibraryCatalog),
+            new Option("Book Catalog", BookCatalog),
             new Option("Library Members", LibraryMembers),
             new Option("Admin area", AdminArea),
             new Option("Configuration", Configuration)
         };
         mainMenu = new("Main Menu", mainMenuOptions);
 
-        List<Option> catalogMenuOptions = new(){
+        List<Option> bookCatalogMenuOptions = new(){
             new Option("Add a book", AddBook),
             new Option("Remove a book", RemoveBook),
             new Option("List all books", ListBooks),
             new Option("Search for a book", SearchBook),
-            new Option("Loan a book", LoanBook)
+            new Option("Loan a book", LoanBook),
+            new Option("Return a book", ReturnBook)
         };
-        catalogMenu = new("Book Catalog", catalogMenuOptions);
+        catalogMenu = new("Book Catalog", bookCatalogMenuOptions);
 
         List<Option> membersMenuOptions = new(){
             new Option("Add a member", AddMember),
@@ -85,7 +87,7 @@ public class ConsoleApp
 
     #region Main Menu
     //Main Menu
-    public void LibraryCatalog()
+    public void BookCatalog()
     {
         catalogMenu.MenuInteraction();
     }
@@ -107,7 +109,7 @@ public class ConsoleApp
 
     #endregion
 
-    #region Catalog Menu
+    #region Book Catalog Menu
     //Catalog Menu
     public void AddBook()
     {
@@ -226,6 +228,18 @@ public class ConsoleApp
             Menu.message = "Book loaned successfully";
         } 
 
+    }
+
+    public void ReturnBook()
+    {
+        string input = ConsoleUtils.Prompt("Enter a ISBN13 number");
+        ValidationUtils.String(input);
+        if (library.Return(input))
+        {
+            history.Add($"Book returned: {input}");
+            if (config.ContainsKey("historyOnFile") && config["historyOnFile"]) SaveHistory();
+            Menu.message = "Book returned successfully";
+        }
     }
 
     #endregion
@@ -353,8 +367,18 @@ public class ConsoleApp
     public void ReportBorrowedDownload()
     {
         string pathString = GenerateNameToFile("BorrowedBooksReport");
-        library.GenerateBorrowedReport(pathString);
-        Menu.message = $"Report generated\nYou can find your new report at {pathString}";
+        string fileExport = library.GenerateBorrowedReport(pathString);
+        if(fileExport!= null)
+        {
+            File.WriteAllText(pathString, fileExport);
+            Menu.message = $"Report generated\nYou can find your new report at {pathString}";
+        }
+        else
+        {
+            Menu.message = "There are no books on loan.";
+
+        }
+        
     }
 
     #endregion
