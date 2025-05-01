@@ -7,18 +7,19 @@ using System.Threading.Tasks;
 using Lexicon_Slutuppgift.Core;
 using Lexicon_Slutuppgift.Core.Collections;
 using Slutuppgift.Utils;
-using System.Windows.Forms;
 
 namespace Lexicon_Slutuppgift;
 public class ConsoleApp
 {
-     BooksHandler library;
-     MembersHandler members;
-     Menu mainMenu;
-     Menu adminMenu;
-     Menu catalogMenu;
-     Menu membersMenu;
-     List<string> history; 
+    BooksHandler library;
+    MembersHandler members;
+    Menu mainMenu;
+    Menu adminMenu;
+    Menu catalogMenu;
+    Menu membersMenu;
+    Menu configurationMenu;
+    List<string> history;
+    Dictionary<string, bool> config;
 
     public void start()
     {
@@ -33,7 +34,9 @@ public class ConsoleApp
             library = new("library");
             members = new("members");
             history = new();
+            config = new();
             LoadHistory();
+            LoadConfiguration();
         }
         catch (Exception ex)
         {
@@ -41,9 +44,10 @@ public class ConsoleApp
         }
 
         List<Option> mainMenuOptions = new(){
-            new Option("Library Catalog", LibraryCatalog),
+            new Option("Book Catalog", LibraryCatalog),
             new Option("Library Members", LibraryMembers),
-            new Option("Admin area", AdminArea)
+            new Option("Admin area", AdminArea),
+            new Option("Configuration", Configuration)
         };
         mainMenu = new("Main Menu", mainMenuOptions);
 
@@ -54,7 +58,7 @@ public class ConsoleApp
             new Option("Search for a book", SearchBook),
             new Option("Loan a book", LoanBook)
         };
-        catalogMenu = new("Catalog Menu", catalogMenuOptions);
+        catalogMenu = new("Book Catalog", catalogMenuOptions);
 
         List<Option> membersMenuOptions = new(){
             new Option("Add a member", AddMember),
@@ -67,11 +71,15 @@ public class ConsoleApp
         List<Option> adminMenuOptions = new(){
             new Option("Add Dummy library", LoadDummyLibrary),
             new Option("Clear Library", ClearLibrary),
-            new Option("Report Borrowed Books", ReportBorrowed),
-            new Option("Show history report", ShowHistory),
-            new Option("Download history report", DownloadHistory)
+            new Option("Borrowed Books Report", ReportBorrowedDownload)
         };
         adminMenu = new("Admin Menu", adminMenuOptions);
+
+        string historyOnFile = (config.ContainsKey("historyOnFile") && config["historyOnFile"]) ? "ON" : "OFF";
+        List < Option > configurationOptions = new(){
+            new Option($"Save history on file : {historyOnFile}", SaveHistoryOnFile)
+        };
+        configurationMenu = new("Configuration", configurationOptions);
 
     }
 
@@ -90,6 +98,11 @@ public class ConsoleApp
     public void AdminArea()
     {
         adminMenu.MenuInteraction();
+    }
+
+    public void Configuration()
+    {
+        configurationMenu.MenuInteraction();
     }
 
     #endregion
@@ -128,7 +141,7 @@ public class ConsoleApp
         {
             Menu.message = "Book added";
             history.Add($"Book added: {newBook.IdNr}");
-            SaveHistory();
+            if (config.ContainsKey("historyOnFile") && config["historyOnFile"]) SaveHistory();
         }
         
     }
@@ -146,7 +159,7 @@ public class ConsoleApp
                 {
                     Menu.message = $"BOOK REMOVED\nTitle: {selectedBook.Name}, Author: {selectedBook.Author}, ISBN: {selectedBook.IdNr}";
                     history.Add($"Book removed: {selectedBook.IdNr}");
-                    SaveHistory();
+                    if (config.ContainsKey("historyOnFile") && config["historyOnFile"]) SaveHistory();
                 }
                     
             }
@@ -209,7 +222,7 @@ public class ConsoleApp
         if (library.Loan(input))
         {
             history.Add($"Book loaned: {input}");
-            SaveHistory();
+            if (config.ContainsKey("historyOnFile") && config["historyOnFile"]) SaveHistory();
             Menu.message = "Book loaned successfully";
         } 
 
@@ -246,7 +259,7 @@ public class ConsoleApp
         if (members.Add(newMember))
         {
             history.Add($"Member added: {newMember.IdNr}");
-            SaveHistory();
+            if (config.ContainsKey("historyOnFile") && config["historyOnFile"]) SaveHistory();
             Menu.message = "Member added";
         } 
     }
@@ -263,7 +276,7 @@ public class ConsoleApp
                 if (members.Remove(selectedMember))
                 {
                     history.Add($"Member removed: {selectedMember.IdNr}");
-                    SaveHistory();
+                    if (config.ContainsKey("historyOnFile") && config["historyOnFile"]) SaveHistory();
                     Menu.message = $"MEMBER REMOVED\nTitle: {selectedMember.Name}, Number: {selectedMember.IdNr}";
                 }
                     
@@ -337,38 +350,36 @@ public class ConsoleApp
         Menu.message = "Dummy Library Loaded";
     }
 
-    public void ReportBorrowed()
+    public void ReportBorrowedDownload()
     {
-        bool outVariable = true;
-        int count = 0;
-        string number = (count == 0) ? "" : count.ToString();
-        string documentsPath = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments);
-        string pathString = $"{documentsPath}\\BorrowedBooksReport{number}.txt";
-        do
-        {
-            if (!File.Exists(pathString)) outVariable = false;
-        }
-        while (outVariable);
+        string pathString = GenerateNameToFile("BorrowedBooksReport");
         library.GenerateBorrowedReport(pathString);
         Menu.message = $"Report generated\nYou can find your new report at {pathString}";
     }
 
-    public void ShowHistory()
+    #endregion
+
+    #region Configuration Menu
+
+    public void SaveHistoryOnFile()
     {
-        ConsoleUtils.NewTitle("History");
-        if (history != null)
+        if (config.ContainsKey("historyOnFile"))
         {
-            for (int i = 0; i < history.Count; i++)
-            {
-                Console.WriteLine($"{i + 1}. {history[i]}");
-            }
+            config["historyOnFile"] = !config["historyOnFile"];
+
         }
         else
         {
-            Console.WriteLine("\nNo history to show.\n");
+            config.Add("historyOnFile", true);
         }
-        Console.WriteLine("Press any key to continue");
-        Console.ReadKey();
+        SaveConfiguration();
+
+        Menu.message=$"History on file: {config["historyOnFile"]}.";
+        string historyOnFile = (config.ContainsKey("historyOnFile") && config["historyOnFile"]) ? "ON" : "OFF";
+        List<Option> configurationOptions = new(){
+            new Option($"Save history on file : {historyOnFile}", SaveHistoryOnFile)
+        };
+        configurationMenu = new("Configuration", configurationOptions);
     }
 
     #endregion
@@ -379,8 +390,8 @@ public class ConsoleApp
     {
         if (File.Exists("history.txt"))
         {
-            List<string> incomminHistory = JsonSerializer.Deserialize<List<string>>(File.ReadAllText("history.txt"));
-            history = incomminHistory;
+            List<string> incommingHistory = JsonSerializer.Deserialize<List<string>>(File.ReadAllText("history.txt"));
+            history = incommingHistory;
         }
         else
         {
@@ -400,25 +411,48 @@ public class ConsoleApp
         }
     }
 
-    public void DownloadHistory()
+    public void LoadConfiguration()
     {
-        SaveFileDialog saveFileDialog = new SaveFileDialog();
-        saveFileDialog.Title = "Save As";
-        saveFileDialog.Filter = "Text files (*.txt)|*.txt|All files (*.*)|*.*";
-        saveFileDialog.FileName = "History.txt";
-
-        // Show dialog
-        if (saveFileDialog.ShowDialog() == DialogResult.OK)
+        if (File.Exists("configuration.txt"))
         {
-            string path = saveFileDialog.FileName;
-
-            System.IO.File.WriteAllLines(path, history);
-            Console.WriteLine($"File saved to: {path}");
+            Dictionary<string, bool> incommingHistory = JsonSerializer.Deserialize<Dictionary<string, bool>>(File.ReadAllText("configuration.txt"));
+            config = incommingHistory;
         }
         else
         {
-            Console.WriteLine("Save cancelled.");
+            Console.WriteLine("No configuration found.");
         }
+    }
+
+    public void SaveConfiguration()
+    {
+        if (config != null)
+        {
+            File.WriteAllText("configuration.txt", JsonSerializer.Serialize(config));
+        }
+        else
+        {
+            Console.WriteLine("No configuration to save.");
+        }
+    }
+
+    public string GenerateNameToFile(string fileName)
+    {
+        bool outVariable = true;
+        int count = 0;
+
+        string documentsPath = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments);
+        string pathString;
+        do
+        {
+            string number = (count == 0) ? "" : count.ToString();
+            pathString = $"{documentsPath}\\{fileName}{number}.txt";
+            if (!File.Exists(pathString)) outVariable = false;
+            else count++;
+        }
+        while (outVariable);
+
+        return pathString;
     }
 
     #endregion
