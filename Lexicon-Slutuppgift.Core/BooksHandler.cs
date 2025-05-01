@@ -34,6 +34,26 @@ namespace Lexicon_Slutuppgift.Core
                 return false;
             }
         }
+
+        public bool Return(string inputISBN13)
+        {
+            Identification ReturnBook = Catalog.FirstOrDefault(b => b.IdNr == inputISBN13);
+            Book returnBookBook = (Book)ReturnBook;
+            if (returnBookBook == null) return false;
+            returnBookBook.OnLoan = false;
+
+            try
+            {
+                PushCatalogToMain();
+                return true;
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error Updating the catalog: {ex.Message}");
+                returnBookBook.OnLoan = true;
+                return false;
+            }
+        }
         public override bool Add(Book newItem)
         {
             if (newItem.Author == null) return false;
@@ -52,26 +72,25 @@ namespace Lexicon_Slutuppgift.Core
             }
         }
 
-        public void GenerateBorrowedReport(string path)
+        public string GenerateBorrowedReport(string path)
         {
             var loaned = Catalog.Where(i => i.OnLoan == true).ToList();
             List<Book> loanedBooks = (List<Book>)loaned;
             if (loanedBooks.Count == 0)
             {
-                Console.WriteLine("No books are currently loaned.");
+                return null;
             }
             else
             {
                 string fileExport = "LOANED BOOKS\n";
-                ConsoleUtils.NewTitle("Loaned Books");
 
                 for (int i = 0; i < loanedBooks.Count; i++)
                 {
                     string newBook = $"\n{i + 1}. {loanedBooks[i].ToString()}\n";
                     fileExport += newBook;
-                    Console.WriteLine(newBook);
                 }
-                File.WriteAllText(path, fileExport);
+                return fileExport;
+                
             }
             
         }
