@@ -2,10 +2,12 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Text.Json;
 using System.Threading.Tasks;
 using Lexicon_Slutuppgift.Core;
 using Lexicon_Slutuppgift.Core.Collections;
 using Slutuppgift.Utils;
+using System.Windows.Forms;
 
 namespace Lexicon_Slutuppgift;
 public class ConsoleApp
@@ -16,6 +18,7 @@ public class ConsoleApp
      Menu adminMenu;
      Menu catalogMenu;
      Menu membersMenu;
+     List<string> history; 
 
     public void start()
     {
@@ -29,6 +32,8 @@ public class ConsoleApp
         {
             library = new("library");
             members = new("members");
+            history = new();
+            LoadHistory();
         }
         catch (Exception ex)
         {
@@ -62,7 +67,9 @@ public class ConsoleApp
         List<Option> adminMenuOptions = new(){
             new Option("Add Dummy library", LoadDummyLibrary),
             new Option("Clear Library", ClearLibrary),
-            new Option("Report Borrowed Books", ReportBorrowed)
+            new Option("Report Borrowed Books", ReportBorrowed),
+            new Option("Show history report", ShowHistory),
+            new Option("Download history report", DownloadHistory)
         };
         adminMenu = new("Admin Menu", adminMenuOptions);
 
@@ -117,7 +124,13 @@ public class ConsoleApp
             else Console.WriteLine("Please enter a 13 digits ISBN.");
         } while (newBook.IdNr == null);
 
-        if (library.Add(newBook)) Menu.message = "Book added";
+        if (library.Add(newBook))
+        {
+            Menu.message = "Book added";
+            history.Add($"Book added: {newBook.IdNr}");
+            SaveHistory();
+        }
+        
     }
 
     public void RemoveBook()
@@ -129,8 +142,13 @@ public class ConsoleApp
             Book selectedBook = library.Select(input);
             if (selectedBook != null)
             {
-                if (library.Remove(selectedBook))
+                if (library.Remove(selectedBook)) 
+                {
                     Menu.message = $"BOOK REMOVED\nTitle: {selectedBook.Name}, Author: {selectedBook.Author}, ISBN: {selectedBook.IdNr}";
+                    history.Add($"Book removed: {selectedBook.IdNr}");
+                    SaveHistory();
+                }
+                    
             }
             else
             {
@@ -188,7 +206,12 @@ public class ConsoleApp
     {
         string input = ConsoleUtils.Prompt("Enter a ISBN13 number");
         ValidationUtils.String(input);
-        if (library.Loan(input)) Menu.message = "Book loaned successfully";
+        if (library.Loan(input))
+        {
+            history.Add($"Book loaned: {input}");
+            SaveHistory();
+            Menu.message = "Book loaned successfully";
+        } 
 
     }
 
@@ -218,9 +241,14 @@ public class ConsoleApp
             if (ValidationUtils.String(input)) newMember.Address = input;
             else Console.WriteLine("Please enter an address.");
         } while (newMember.Address == null);
-        
 
-        if (members.Add(newMember)) Menu.message = "Member added";
+
+        if (members.Add(newMember))
+        {
+            history.Add($"Member added: {newMember.IdNr}");
+            SaveHistory();
+            Menu.message = "Member added";
+        } 
     }
 
     public void RemoveMember()
@@ -233,7 +261,12 @@ public class ConsoleApp
             if (selectedMember != null)
             {
                 if (members.Remove(selectedMember))
+                {
+                    history.Add($"Member removed: {selectedMember.IdNr}");
+                    SaveHistory();
                     Menu.message = $"MEMBER REMOVED\nTitle: {selectedMember.Name}, Number: {selectedMember.IdNr}";
+                }
+                    
             }
             else
             {
@@ -318,6 +351,74 @@ public class ConsoleApp
         while (outVariable);
         library.GenerateBorrowedReport(pathString);
         Menu.message = $"Report generated\nYou can find your new report at {pathString}";
+    }
+
+    public void ShowHistory()
+    {
+        ConsoleUtils.NewTitle("History");
+        if (history != null)
+        {
+            for (int i = 0; i < history.Count; i++)
+            {
+                Console.WriteLine($"{i + 1}. {history[i]}");
+            }
+        }
+        else
+        {
+            Console.WriteLine("\nNo history to show.\n");
+        }
+        Console.WriteLine("Press any key to continue");
+        Console.ReadKey();
+    }
+
+    #endregion
+
+    #region generalFunctions
+
+    public void LoadHistory()
+    {
+        if (File.Exists("history.txt"))
+        {
+            List<string> incomminHistory = JsonSerializer.Deserialize<List<string>>(File.ReadAllText("history.txt"));
+            history = incomminHistory;
+        }
+        else
+        {
+            Console.WriteLine("No history found.");
+        }
+    }
+
+    public void SaveHistory()
+    {
+        if (history != null)
+        {
+            File.WriteAllText("history.txt", JsonSerializer.Serialize(history));
+        }
+        else
+        {
+            Console.WriteLine("No history to save.");
+        }
+    }
+
+    public void DownloadHistory()
+    {
+        SaveFileDialog saveFileDialog = new SaveFileDialog();
+        saveFileDialog.Title = "Save As";
+        saveFileDialog.Filter = "Text files (*.txt)|*.txt|All files (*.*)|*.*";
+        saveFileDialog.FileName = "History.txt";
+
+        // Show dialog
+        if (saveFileDialog.ShowDialog() == DialogResult.OK)
+        {
+            string path = saveFileDialog.FileName;
+
+            System.IO.File.WriteAllLines(path, history);
+            Console.WriteLine($"File saved to: {path}");
+        }
+        else
+        {
+            Console.WriteLine("Save cancelled.");
+        }
     }
 
     #endregion
